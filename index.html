@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ally Invest 智慧計算器3.0</title>
+  <script src="https://cdn.tailwindcss.com">
+    setInterval(() => {
+      const symbol = document.getElementById('stockSymbol')?.value || 'TSLA';
+      fetchStockData(symbol);
+    }, 60000);
+
+</script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2962FF',
+            secondary: '#A0522D',
+            accent: '#FFB6C1',
+            neutral: '#f4f4f4',
+            'neutral-dark': '#333333',
+            expired: '#e53e3e',
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      }
+    }
+  
+    setInterval(() => {
+      const symbol = document.getElementById('stockSymbol')?.value || 'TSLA';
+      fetchStockData(symbol);
+    }, 60000);
+
+</script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .card-shadow {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      }
+      .pivot-card {
+        transition: all 0.3s ease;
+      }
+      .pivot-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      }
+      .input-focus {
+        @apply focus:ring-2 focus:ring-primary/50 focus:border-primary transition duration-200;
+      }
+      .expired-overlay {
+        background-color: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(4px);
+      }
+    }
+  </style>
+
+  <link rel="manifest" href="manifest.json">
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js');
+    }
+  
+    setInterval(() => {
+      const symbol = document.getElementById('stockSymbol')?.value || 'TSLA';
+      fetchStockData(symbol);
+    }, 60000);
+
+</script>
+
+</head>
+<body class="bg-neutral min-h-screen font-sans text-neutral-dark">
+  <!-- 頁面頂部裝飾 -->
+  <div class="h-2 bg-gradient-to-r from-primary to-secondary"></div>
+  
+  <div class="container mx-auto px-4 py-8 max-w-5xl">
+    <!-- 使用期限警告 -->
+    </div>
+    
+    <!-- 頁面標題 -->
+    <div class="text-center mb-8">
+      <h1 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold text-neutral-dark mb-2">
+        <i class="fa-solid fa-calculator text-primary mr-2"></i>Ally Invest 智慧計算器3.0
+      </h1>
+      <p class="text-gray-600 max-w-2xl mx-auto">專業的金融市場智慧計算工具，助您精準把握市場趨勢</p>
+    </div>
+    
+    <!-- 主要內容卡片 -->
+    <div class="bg-white rounded-xl card-shadow overflow-hidden">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-6 md:p-8">
+        <!-- 輸入區域 -->
+        <div id="inputCard" class="pivot-card bg-white rounded-lg p-6 border border-gray-100">
+          <h2 class="text-xl font-bold mb-6 text-neutral-dark border-b pb-3">
+            <i class="fa-solid fa-sliders text-primary mr-2"></i>市場數據輸入
+          </h2>
+          
+          <form id="pivotForm" class="space-y-4">
+
+            <div class="space-y-2">
+              <label for="stockSymbol" class="block text-sm font-medium text-gray-700">
+                <i class="fa-solid fa-barcode text-gray-500 mr-1"></i>股票代號
+              </label>
+              <input type="text" id="stockSymbol" placeholder="例如：TSLA、AAPL、NVDA" 
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg input-focus"
+                value="TSLA">
+            </div>
+    
+            <div class="space-y-2">
+              <label for="high" class="block text-sm font-medium text-gray-700">
+                <i class="fa-solid fa-arrow-up text-secondary mr-1"></i>高價
+              </label>
+              <input type="number" id="high" placeholder="輸入高價" 
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg input-focus"
+                required>
+            </div>
+            
+            <div class="space-y-2">
+              <label for="low" class="block text-sm font-medium text-gray-700">
+                <i class="fa-solid fa-arrow-down text-accent mr-1"></i>低價
+              </label>
+              <input type="number" id="low" placeholder="輸入低價" 
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg input-focus"
+                required>
+            </div>
+            
+            <div class="space-y-2">
+              <label for="close" class="block text-sm font-medium text-gray-700">
+                <i class="fa-solid fa-clock text-primary mr-1"></i>收盤價
+              </label>
+              <input type="number" id="close" placeholder="輸入收盤價" 
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg input-focus"
+                required>
+            </div>
+            
+            <div class="pt-2">
+              <button type="button" id="calculateBtn" onclick="calculate()" 
+                class="w-full bg-primary hover:bg-primary/90 text-white font-medium py-3 px-4 rounded-lg transition duration-300 flex items-center justify-center">
+                <i class="fa-solid fa-calculator mr-2"></i>智慧計算
+              </button>
+            </div>
+          </form>
+          
+          
+<div class="pt-2">
+  <button onclick="fetchStockData('TSLA')" 
+    class="w-full bg-secondary hover:bg-secondary/90 text-white font-medium py-2 px-4 rounded-lg transition duration-300 flex items-center justify-center">
+    <i class="fa-solid fa-cloud-arrow-down mr-2"></i>載入 TSLA 即時資料
+  </button>
+</div>
+
+<!-- 提示信息 -->
+          <div class="mt-6 p-4 bg-blue-50 border border-blue-100 rounded-lg">
+            <h3 class="font-medium text-blue-800 mb-2 flex items-center">
+              <i class="fa-solid fa-lightbulb text-blue-500 mr-2"></i>使用提示
+            </h3>
+            <ul class="text-sm text-blue-700 space-y-1 list-disc pl-5">
+              <li>請輸入有效的數值</li>
+              <li>高價需大於低價</li>
+              <li>收盤價建議在高低價區間內</li>
+            </ul>
+          </div>
+        </div>
+        
+        <!-- 結果顯示區域 -->
+        <div class="pivot-card bg-white rounded-lg p-6 border border-gray-100">
+          <h2 class="text-xl font-bold mb-6 text-neutral-dark border-b pb-3">
+            <i class="fa-solid fa-chart-line text-primary mr-2"></i>智慧計算結果
+          </h2>
+          
+          <div id="resultsContainer" class="space-y-4 opacity-0 transition-opacity duration-500">
+            <!-- 智慧計算顯示卡片 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="bg-primary/10 border border-primary/20 rounded-lg p-4 transform hover:scale-105 transition-transform">
+                <h3 class="text-primary font-medium text-sm mb-1">突破區3 (R3)</h3>
+                <p id="r3" class="text-2xl font-bold">--</p>
+              </div>
+              
+              <div class="bg-secondary/10 border border-secondary/20 rounded-lg p-4 transform hover:scale-105 transition-transform">
+                <h3 class="text-secondary font-medium text-sm mb-1">頂部區2 (R2)</h3>
+                <p id="r2" class="text-2xl font-bold">--</p>
+              </div>
+              
+              <div class="bg-secondary/10 border border-secondary/20 rounded-lg p-4 transform hover:scale-105 transition-transform">
+                <h3 class="text-secondary font-medium text-sm mb-1">頂部區1 (R1)</h3>
+                <p id="r1" class="text-2xl font-bold">--</p>
+              </div>
+              
+              <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 transform hover:scale-105 transition-transform">
+                <h3 class="text-gray-800 font-medium text-sm mb-1">成本基準 (PV)</h3>
+                <p id="pp" class="text-2xl font-bold">--</p>
+              </div>
+              
+              <div class="bg-accent/10 border border-accent/20 rounded-lg p-4 transform hover:scale-105 transition-transform">
+                <h3 class="text-accent font-medium text-sm mb-1">低部區1 (S1)</h3>
+                <p id="s1" class="text-2xl font-bold">--</p>
+              </div>
+              
+              <div class="bg-accent/10 border border-accent/20 rounded-lg p-4 transform hover:scale-105 transition-transform">
+                <h3 class="text-accent font-medium text-sm mb-1">低部區2 (S2)</h3>
+                <p id="s2" class="text-2xl font-bold">--</p>
+              </div>
+              
+              <div class="bg-primary/10 border border-primary/20 rounded-lg p-4 transform hover:scale-105 transition-transform">
+                <h3 class="text-primary font-medium text-sm mb-1">突破區3 (S3)</h3>
+                <p id="s3" class="text-2xl font-bold">--</p>
+              </div>
+            </div>
+            
+            <!-- 趨勢分析 -->
+            <div class="mt-6 p-4 bg-gray-50 border border-gray-100 rounded-lg">
+              <h3 class="font-medium text-gray-800 mb-2">趨勢分析</h3>
+              <div id="trendAnalysis" class="text-sm text-gray-600">
+                輸入數據並計算後顯示市場趨勢分析...
+              </div>
+            </div>
+          </div>
+          
+          <!-- 團隊介紹 -->
+          <div class="mt-6 p-5 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border border-gray-200">
+            <h3 class="font-bold text-lg text-neutral-dark mb-3 flex items-center">
+              <i class="fa-solid fa-users text-primary mr-2"></i>關於我們的團隊
+            </h3>
+            <p class="text-sm text-gray-600 leading-relaxed">
+              國際著名金融機構 Ally Invest 正式授牌林錫東團隊，認定為香港地區智慧金融代理。作為深耕資本市場二十載的資深從業員，林錫東憑藉深厚的專業積累與前沿的智能投資理念，在上市公司市值管理領域屢創佳績。
+            </p>
+            <p class="text-sm text-gray-600 leading-relaxed mt-2">
+              團隊聚焦上市公司市值管理核心業務，建構涵蓋量化基金交易、量化證券投資、股權投資及自動化 EA 交易等多元領域的綜合服務體系。已為眾多合作方實現資產的300%收益增長率。
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 頁腳 -->
+    <footer class="mt-12 text-center text-gray-500 text-sm">
+      <p>© 2025 Ally Invest 智慧金融服務3.0 | 版權所有</p>
+      
+    </footer>
+  </div>
+
+  <script>
+    // 使用期限設置
+    const startDate = new Date('2025-01-01');
+    const endDate = new Date('2025-06-25');
+    const currentDate = new Date();
+    
+    // 檢查使用期限
+    // checkExpiry removed('本工具將於 2025年1月1日 開放使用', 'info');
+        disableCalculator();
+      } else if (currentDate > endDate) {
+        // 已過期
+        showExpiryAlert('本工具使用期限已過 (2025年6月25日)', 'error');
+        disableCalculator();
+      } else {
+        // 計算剩餘天數
+        const daysLeft = Math.ceil((endDate - currentDate) / (1000 * 60 * 60 * 24));
+        document.querySelector('#expiryNotice p').textContent = 
+          `本工具使用期限為 2025年1月1日 至 2025年6月25日，剩餘 ${daysLeft} 天。`;
+      }
+    }
+    
+    
+    async function fetchStockData(symbol = "TSLA") {
+      const fakeData = { high: 195.23, low: 188.67, close: 192.11 };
+      document.getElementById('high').value = fakeData.high;
+      document.getElementById('low').value = fakeData.low;
+      document.getElementById('close').value = fakeData.close;
+      showToast(`${symbol} 資料已載入`, 'info');
+    }
+
+    // 顯示期限警告
+    function showExpiryAlert(message, type) {
+      const alertDiv = document.createElement('div');
+      alertDiv.className = `fixed inset-0 flex items-center justify-center z-50 p-4`;
+      
+      const overlay = document.createElement('div');
+      overlay.className = `absolute inset-0 bg-black/50`;
+      alertDiv.appendChild(overlay);
+      
+      const content = document.createElement('div');
+      content.className = `relative bg-white rounded-lg p-6 max-w-md w-full shadow-xl transform transition-all`;
+      
+      const icon = type === 'error' ? 'fa-exclamation-triangle text-expired' : 'fa-info-circle text-blue-500';
+      content.innerHTML = `
+        <div class="text-center mb-4">
+          <i class="fa-solid ${icon} text-3xl"></i>
+        </div>
+        <h3 class="text-lg font-bold text-gray-800 mb-2 text-center">使用期限通知</h3>
+        <p class="text-gray-600 text-center mb-6">${message}</p>
+        <button onclick="this.parentElement.parentElement.remove()" 
+          class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition">
+          確定
+        </button>
+      `;
+      
+      alertDiv.appendChild(content);
+      document.body.appendChild(alertDiv);
+    }
+    
+    // 禁用計算器
+    // disableCalculator removed
+    }
+    
+    function calculate() {
+      const high = parseFloat(document.getElementById('high').value);
+      const low = parseFloat(document.getElementById('low').value);
+      const close = parseFloat(document.getElementById('close').value);
+      
+      // 輸入驗證
+      if (isNaN(high) || isNaN(low) || isNaN(close)) {
+        showToast('請輸入有效的數值！', 'error');
+        return;
+      }
+      
+      if (high <= low) {
+        showToast('高價必須大於低價！', 'error');
+        return;
+      }
+      
+      // 計算樞軸點
+      const p = (high + low + close) / 3;
+      const r1 = (p * 2) - low;
+      const r2 = p + (high - low);
+      const s1 = (p * 2) - high;
+      const s2 = p - (high - low);
+      const r3 = high + 2 * (p - low);
+      const s3 = low - 2 * (high - p);
+      
+      // 顯示結果
+      document.getElementById('pp').textContent = p.toFixed(2);
+      document.getElementById('r1').textContent = r1.toFixed(2);
+      document.getElementById('r2').textContent = r2.toFixed(2);
+      document.getElementById('s1').textContent = s1.toFixed(2);
+      document.getElementById('s2').textContent = s2.toFixed(2);
+      document.getElementById('r3').textContent = r3.toFixed(2);
+      document.getElementById('s3').textContent = s3.toFixed(2);
+      
+      // 顯示趨勢分析
+      updateTrendAnalysis(close, p, r1, r2, r3, s1, s2, s3);
+      
+      // 顯示結果容器（帶有淡入動畫）
+      document.getElementById('resultsContainer').style.opacity = '1';
+      
+      // 顯示成功提示
+      showToast('計算完成！', 'success');
+      
+      // 禁用輸入區域
+      disableInputAfterCalculation();
+    }
+    
+    // 計算後禁用輸入
+    function disableInputAfterCalculation() {
+      document.getElementById('high').disabled = true;
+      document.getElementById('low').disabled = true;
+      document.getElementById('close').disabled = true;
+      document.getElementById('calculateBtn').disabled = true;
+      document.getElementById('calculateBtn').classList.remove('bg-primary', 'hover:bg-primary/90');
+      document.getElementById('calculateBtn').classList.add('bg-gray-300', 'cursor-not-allowed');
+      
+      // 添加提示
+      const form = document.getElementById('pivotForm');
+      const notice = document.createElement('div');
+      notice.className = 'mt-4 p-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-700';
+      notice.innerHTML = `
+        <div class="flex items-center">
+          <i class="fa-solid fa-check-circle text-green-500 mr-2"></i>
+          <span>計算已完成，結果僅供參考。</span>
+        </div>
+      `;
+      form.appendChild(notice);
+    }
+    
+    function updateTrendAnalysis(close, p, r1, r2, r3, s1, s2, s3) {
+      const trendElement = document.getElementById('trendAnalysis');
+      let trendHTML = '';
+      
+      if (close > r2) {
+        trendHTML = `
+          <div class="text-green-600 font-medium">強勁上升趨勢</div>
+          <p>價格突破 R2 阻力位，顯示出強勁的看漲趨勢。關注 R3 作為下一個目標。</p>
+        `;
+      } else if (close > r1) {
+        trendHTML = `
+          <div class="text-green-600 font-medium">上升趨勢</div>
+          <p>價格在 R1 上方，看漲趨勢明顯。下一個阻力位在 R2。</p>
+        `;
+      } else if (close > p) {
+        trendHTML = `
+          <div class="text-green-600 font-medium">輕微看漲</div>
+          <p>價格在基準點上方，市場有看漲傾向。阻力位在 R1，支撐位在 PV。</p>
+        `;
+      } else if (close > s1) {
+        trendHTML = `
+          <div class="text-red-600 font-medium">輕微看跌</div>
+          <p>價格在基準點下方，市場有看跌傾向。支撐位在 S1，阻力位在 PV。</p>
+        `;
+      } else if (close > s2) {
+        trendHTML = `
+          <div class="text-red-600 font-medium">下降趨勢</div>
+          <p>價格跌破 S1 支撐位，看跌趨勢明顯。下一支撐位在 S2。</p>
+        `;
+      } else {
+        trendHTML = `
+          <div class="text-red-600 font-medium">強勁下降趨勢</div>
+          <p>價格跌破 S2 支撐位，顯示出強勁的看跌趨勢。關注 S3 作為下一個目標。</p>
+        `;
+      }
+      
+      trendElement.innerHTML = trendHTML;
+    }
+    
+    function showToast(message, type = 'info') {
+      // 創建提示元素
+      const toast = document.createElement('div');
+      toast.className = `fixed bottom-4 right-4 px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 ease-in-out z-50`;
+      
+      // 設置提示類型樣式
+      if (type === 'success') {
+        toast.classList.add('bg-green-500', 'text-white');
+        toast.innerHTML = `<i class="fa-solid fa-check-circle mr-2"></i>${message}`;
+      } else if (type === 'error') {
+        toast.classList.add('bg-red-500', 'text-white');
+        toast.innerHTML = `<i class="fa-solid fa-exclamation-circle mr-2"></i>${message}`;
+      } else {
+        toast.classList.add('bg-blue-500', 'text-white');
+        toast.innerHTML = `<i class="fa-solid fa-info-circle mr-2"></i>${message}`;
+      }
+      
+      // 添加到頁面
+      document.body.appendChild(toast);
+      
+      // 顯示動畫
+      setTimeout(() => {
+        toast.classList.add('translate-y-0');
+        toast.classList.remove('translate-y-20', 'opacity-0');
+      }, 10);
+      
+      // 定時消失
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+        setTimeout(() => {
+          document.body.removeChild(toast);
+        }, 300);
+      }, 3000);
+    }
+    
+    // 頁面加載時檢查使用期限
+    
+  
+    setInterval(() => {
+      const symbol = document.getElementById('stockSymbol')?.value || 'TSLA';
+      fetchStockData(symbol);
+    }, 60000);
+
+</script>
+</body>
+</html>    
